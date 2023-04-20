@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vlies Rechner</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+    <script src="//unpkg.com/alpinejs" defer></script>
+</head>
+
+<body x-data="{ weights: [undefined, null, null, 3], pairs: []}" x-init="$watch('weights', handleWeights())">
+    <h2>Vliese</h2>
+    <p>
+        <small>
+            Bitte im folgendem Format eingeben: 4,5kg &rarr; 4.5
+        </small>
+    </p>
+
+
+    <template x-for="i in weights.length">
+        <div class="div">
+            <input type="number" step="0.001" x-model="weights[i]">
+        </div>
+    </template>
+
+    <h2>Kombinationen</h2>
+
+    <span x-text="weights"></span>
+</body>
+
+</html>
+
+<style>
+    .long {
+        min-width: 95%;
+    }
+</style>
+
+<script>
+    // function to always have 3 null elements at the end of weights list
+
+
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('dropdown', () => ({
+            open: false,
+
+            handleWeights() {
+                if (this.weights.length < 3) {
+                    this.weights.push(null, null, null);
+                }
+
+                // sortedWeights is a list of pair. the first pair will be the biggest and smallest weight. Then remove them from the list, and form the next pair. 
+                // Pairs that are just one item are possbile
+                let clonedWeights = [...this.weights];
+                // remove null and undefined
+                clonedWeights = clonedWeights.filter((weight) => weight !== null && weight !== undefined);
+                while (clonedWeights.length > 1) {
+                    // add pairs to pairs list, of format [biggest, smallest]
+                    this.pairs.push([Math.max(...clonedWeights), Math.min(...clonedWeights)]);
+                    // remove biggest and smallest from clonedWeights
+                    clonedWeights = clonedWeights.filter((weight) => weight !== Math.max(...clonedWeights) && weight !== Math.min(...clonedWeights));
+                }
+                console.log("PAIRS", this.pairs);
+
+            }
+        }))
+    })
+</script>

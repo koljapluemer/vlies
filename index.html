@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vlies Rechner</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+</head>
+
+<body>
+    <h2>Vliese</h2>
+    <p>
+        <small>
+            Bitte im folgendem Format eingeben: 4,5kg &rarr; 4.5
+        </small>
+    </p>
+
+
+    <div id="weights"></div>
+
+    <h2>Kombinationen</h2>
+
+    <div id="pairs"></div>
+</body>
+
+</html>
+
+<style>
+    .long {
+        min-width: 95%;
+    }
+</style>
+
+<script>
+    let weights = [null, null, null];
+    let pairs = [];
+
+    function handleWeights() {
+        if (weights.length < 3) {
+            weights.push(null, null, null);
+        }
+        // calculate pairs
+        let clonedWeights = [...weights];
+        // remove null and undefined
+        clonedWeights = clonedWeights.filter((weight) => weight !== null && weight !== undefined);
+        while (clonedWeights.length > 1) {
+            // add pairs to pairs list, of format [biggest, smallest]
+            let biggest = Math.max(clonedWeights);
+            // use splice to actually remove item
+            clonedWeights.splice(clonedWeights.indexOf(biggest), 1);
+            let smallest = Math.min(clonedWeights);
+            clonedWeights.splice(clonedWeights.indexOf(smallest), 1);
+            pairs.push([biggest, smallest]);
+            console.log(`weights: ${clonedWeights}`);
+        }
+        // if there is one weight left, add it to the last pair
+        if (clonedWeights.length === 1) {
+            pairs.push([clonedWeights[0]]);
+
+        }
+
+        // update html
+        let weightsDiv = document.getElementById('weights');
+        weightsDiv.innerHTML = '';
+        weights.forEach((weight, index) => {
+            let input = document.createElement('input');
+            input.type = 'number';
+            input.step = '0.001';
+            input.value = weight;
+            input.onchange = () => {
+                weights[index] = input.value;
+                handleWeights();
+            }
+            // add event listener to input
+            input.addEventListener('change', () => {
+                weights[index] = input.value;
+                handleWeights();
+            });
+
+            weightsDiv.appendChild(input);
+        });
+
+        let pairsDiv = document.getElementById('pairs');
+        pairsDiv.innerHTML = '';
+        pairs.forEach((pair, index) => {
+            let div = document.createElement('div');
+            div.innerHTML = pair.join('kg, ') + 'kg';
+            pairsDiv.appendChild(div);
+        });
+    }
+
+    handleWeights();
+</script>
