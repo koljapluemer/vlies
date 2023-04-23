@@ -34,31 +34,20 @@
 </style>
 
 <script>
-    let weights = [null, null, null];
+    let weights = [
+        null, null, null
+    ]
     let pairs = [];
 
     function handleWeights() {
-        if (weights.length < 3) {
-            weights.push(null, null, null);
-        }
-        // calculate pairs
-        let clonedWeights = [...weights];
-        // remove null and undefined
-        clonedWeights = clonedWeights.filter((weight) => weight !== null && weight !== undefined);
-        while (clonedWeights.length > 1) {
-            // add pairs to pairs list, of format [biggest, smallest]
-            let biggest = Math.max(clonedWeights);
-            // use splice to actually remove item
-            clonedWeights.splice(clonedWeights.indexOf(biggest), 1);
-            let smallest = Math.min(clonedWeights);
-            clonedWeights.splice(clonedWeights.indexOf(smallest), 1);
-            pairs.push([biggest, smallest]);
-            console.log(`weights: ${clonedWeights}`);
-        }
-        // if there is one weight left, add it to the last pair
-        if (clonedWeights.length === 1) {
-            pairs.push([clonedWeights[0]]);
-
+        console.log("---------------------------------")
+        const numberOfNullWeights = weights.filter((weight) => weight === null).length;
+        if (numberOfNullWeights < 3) {
+            for (let i = 0; i < 3 - numberOfNullWeights; i++) {
+                weights.push(
+                    null
+                );
+            }
         }
 
         // update html
@@ -75,12 +64,39 @@
             }
             // add event listener to input
             input.addEventListener('change', () => {
-                weights[index] = input.value;
+                weights[index].value = input.value;
                 handleWeights();
             });
 
             weightsDiv.appendChild(input);
         });
+
+        function createPairs(arr) {
+            // Sort the array in ascending order
+            arr.sort((a, b) => a - b);
+
+            const pairs = [];
+            let start = 0;
+            let end = arr.length - 1;
+
+            // Iterate through the array, pairing largest and smallest values
+            while (start <= end) {
+                // Add the pair (smallest, largest) to the result
+                if (start !== end) {
+                    pairs.push([arr[start], arr[end]]);
+                } else {
+                    // If there is only one element left, add it as a single value
+                    pairs.push([arr[start]]);
+                }
+                start++;
+                end--;
+            }
+
+            return pairs;
+        }
+
+        // ignore null values
+        pairs = createPairs(weights.filter((weight) => weight !== null));
 
         let pairsDiv = document.getElementById('pairs');
         pairsDiv.innerHTML = '';
