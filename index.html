@@ -53,7 +53,18 @@
         // update html
         let weightsDiv = document.getElementById('weights');
         weightsDiv.innerHTML = '';
+        // sort weights so that the null and '' values are at the end
+        weights.sort((a, b) => {
+            if (a === null || a === '') {
+                return 1;
+            } else if (b === null || b === '') {
+                return -1;
+            } else {
+                return 0;
+            }
+        });
         weights.forEach((weight, index) => {
+
             let input = document.createElement('input');
             input.type = 'number';
             input.step = '0.001';
@@ -69,6 +80,7 @@
             });
 
             weightsDiv.appendChild(input);
+            
         });
 
         function createPairs(arr) {
@@ -96,7 +108,7 @@
         }
 
         // ignore null values
-        pairs = createPairs(weights.filter((weight) => weight !== null));
+        pairs = createPairs(weights.filter((weight) => weight !== null && weight !== ''));
 
         let pairsDiv = document.getElementById('pairs');
         pairsDiv.innerHTML = '';
